@@ -4,6 +4,7 @@ const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs'); // used for hashing password so not sent in plain text.
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
+const passport = require('passport');
 
 // Load User Model
 const User = require('../../models/User')
@@ -58,7 +59,6 @@ router.post('/register', (req, res) => {
 // @route   GET api/users/login
 // @desc    Login user / Returning JWT Token
 // @access  Public
-
 router.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -95,7 +95,7 @@ router.post('/login', (req, res) => {
               },
               (err, token) => {
                 res.json({
-                  succes: true,
+                  success: true,
                   token: 'Bearer ' + token
                 });
               });
@@ -104,8 +104,22 @@ router.post('/login', (req, res) => {
               password: 'Password incorrect'
             });
           }
-        })
-    })
-})
+        });
+    });
+});
+
+// @route   GET api/users/current
+// @desc    Return current user
+// @access  Private
+router.get('/current', passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
+  res.json({
+    id: req.user.id,
+    name: req.user.name,
+    email: req.user.email
+  });
+});
+
 
 module.exports = router;

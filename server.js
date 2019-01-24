@@ -1,9 +1,11 @@
 // bring express framework into server
 const express = require('express');
-// bring mongoose frmework into server for connecting to mongDB.
+// bring mongoose framework into server for connecting to mongDB.
 const mongoose = require('mongoose');
 // bring bodyParser into server so messages can be parsed for res contents
 const bodyParser = require('body-parser');
+// bring passport into server for user authentication.
+const passport = require('passport');
 // bring routes files into server
 const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
@@ -29,9 +31,11 @@ mongoose
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err))
 
-// route to route of localhost on port 5000.
-// send text to browser.
-app.get('/', (req, res) => res.send('Hello World'));
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport configuration
+require('./config/passport')(passport);
 
 // Add routes to server.
 app.use('/api/users', users);
